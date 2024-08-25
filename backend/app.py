@@ -8,7 +8,7 @@ from telegram import Bot
 from telegram.error import TelegramError
 from flask_cors import CORS
 
-# Configuration class for Flask and other services
+# Configuration class for Flask and other services 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'b9a8bd545b2265939a1216abf1b76193')
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres.elaqzrcvbknbzvbkdwgp:iCcxsx4TpDLdwqzq@aws-0-eu-central-1.pooler.supabase.com:6543/postgres'
