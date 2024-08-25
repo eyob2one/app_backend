@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 import random
-from telegram import Bot, Update
-from telegram.ext import Application, CommandHandler, CallbackContext
+import threading
+from telegram import Bot
 from telegram.error import TelegramError
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 
 # Configuration class for Flask and other services
 class Config:
@@ -19,11 +19,10 @@ class Config:
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
 # Initialize Telegram bot
 bot = Bot(token=app.config['TELEGRAM_API_TOKEN'])
-application = Application.builder().token(app.config['TELEGRAM_API_TOKEN']).build()
 
 # Database Models
 class User(db.Model):
@@ -84,7 +83,7 @@ def post_winners_to_channel(chat_id, message):
 # Flask Routes
 @app.route('/')
 def home():
-    return render_template('home.html', channels=Channel.query.all())
+    return render_template('index.html', channels=Channel.query.all())
 
 @app.route('/add_channel', methods=['POST'])
 def add_channel():
@@ -166,26 +165,8 @@ def announce_winners(giveaway_id):
 
     return jsonify({'success': True, 'winners': [{'username': winner.username} for winner in winners]})
 
-# Telegram Command Handlers
-async def start(update: Update, context: CallbackContext):
-    await update.message.reply_text("Welcome to the Giveaway Bot!")
-
-async def create(update: Update, context: CallbackContext):
-    # Extract data from the message and create a giveaway
-    await update.message.reply_text("Giveaway created successfully!")
-
-async def join(update: Update, context: CallbackContext):
-    # Extract data from the message and join a giveaway
-    await update.message.reply_text("You have joined the giveaway!")
-
-application.add_handler(CommandHandler('start', start))
-application.add_handler(CommandHandler('create', create))
-application.add_handler(CommandHandler('join', join))
-
 # Main application entry point
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensure all tables are created
-
-    # Run Flask application
     app.run(host='0.0.0.0', port=5000, debug=True)
