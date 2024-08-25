@@ -3,9 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 import random
-import threading
-from telegram import Bot
-from telegram.error import TelegramError
+from telegram import Bot, TelegramError
 from flask_cors import CORS
 
 # Configuration class for Flask and other services 
@@ -21,7 +19,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 
 # CORS setup
-CORS(app, resources={r"/*": {"origins": "https://eyob2one.github.io"}})
+CORS(app, resources={r"/add_channel": {"origins": "https://eyob2one.github.io"}})
 
 # Initialize Telegram bot
 bot = Bot(token=app.config['TELEGRAM_API_TOKEN'])
@@ -179,3 +177,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensure all tables are created
     app.run(host='0.0.0.0', port=5000, debug=True)
+
